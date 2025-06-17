@@ -1,0 +1,33 @@
+#1. Sort a List of Tuples by the Second Item Using Lambda Function. [("Alice", 88), ("Bob", 72), ("Charlie", 95), ("David", 85)]
+
+students = [("Alice", 88), ("Bob", 72), ("Charlie", 95), ("David", 85)]
+students.sort(key=lambda x: x[1])
+print("Sorted list:", students)
+
+
+
+#2. Write a Python program that takes two numbers as input and performs all basic arithmetic operations (addition, subtraction, multiplication, division, and modulus). Each operation must be implemented using a separate function.
+
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+def multiply(a, b):
+    return a * b
+
+def divide(a, b):
+    return a / b
+
+def modulus(a, b):
+    return a % b
+
+a = int(input("Enter first number: "))
+b = int(input("Enter second number: "))
+
+print("Addition:", add(a, b))
+print("Subtraction:", subtract(a, b))
+print("Multiplication:", multiply(a, b))
+print("Division:", divide(a, b))
+print("Modulus:", modulus(a, b))
