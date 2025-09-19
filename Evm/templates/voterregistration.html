@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Voter Registration Form</title>
+  <style>
+    :root{--accent:#0b74de;--muted:#666}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f6f9fb; margin:0; color:#111}
+    .container{max-width:900px;margin:32px auto;background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(12,20,30,0.08);overflow:hidden}
+    header{padding:20px 28px;border-bottom:1px solid #eef2f6;background:linear-gradient(90deg,#ffffff 0%, #fbfdff 100%)}
+    header h1{margin:0;font-size:20px}
+    form{padding:20px 28px;display:grid;grid-template-columns:1fr;gap:16px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+    input[type="text"], input[type="email"], input[type="date"], input[type="tel"], select, textarea{width:100%;padding:10px 12px;border:1px solid #dbe6ef;border-radius:8px;font-size:14px}
+    textarea{min-height:90px;resize:vertical}
+    .row{display:flex;gap:12px;align-items:center}
+    .small{font-size:12px;color:#777}
+    .photo-preview{width:110px;height:110px;border-radius:8px;border:1px dashed #cddbe8;display:flex;align-items:center;justify-content:center;background:#fbfdff}
+    .actions{display:flex;gap:12px;align-items:center}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+    button.secondary{background:#eef6ff;color:var(--accent);border:1px solid #d7e9ff}
+    footer{padding:16px 28px;border-top:1px solid #eef2f6;background:#fff;text-align:right}
+    .note{font-size:13px;color:#5b6b7a}
+    @media (max-width:720px){.grid-2{grid-template-columns:1fr}.container{margin:12px}}
+    .form-section{padding:12px;border-radius:8px;border:1px solid #f0f4f7;background:#ffffff}
+    .form-title{font-weight:700;margin-bottom:8px}
+    .muted{color:#667084;font-size:13px}
+    .inline-checkbox{display:inline-flex;gap:8px;align-items:center}
+    .success{color:green}
+    .error{color:#b00020}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Voter Registration Form</h1>
+      <p class="small">Please fill all required fields. This is a sample form for project use or demonstration.</p>
+    </header>
+
+    <form id="voterForm" onsubmit="return handleSubmit(event)">
+      <div class="form-section">
+        <div class="form-title">Personal Information</div>
+        <div class="grid-2">
+          <div>
+            <label for="fullName">Full Name *</label>
+            <input id="fullName" name="fullName" type="text" required placeholder="e.g. Ajay Kumar" />
+          </div>
+
+          <div>
+            <label for="dob">Date of Birth *</label>
+            <input id="dob" name="dob" type="date" required />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>Gender</label>
+            <select name="gender">
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="age">Age</label>
+            <input id="age" name="age" type="text" placeholder="Auto-calculated" readonly />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-section">
+        <div class="form-title">Contact & ID</div>
+        <div class="grid-2">
+          <div>
+            <label for="address">Address *</label>
+            <textarea id="address" name="address" required placeholder="Street, City, State, PIN"></textarea>
+          </div>
+
+          <div>
+            <label for="phone">Phone / Mobile *</label>
+            <input id="phone" name="phone" type="tel" pattern="[0-9]{10}" required placeholder="10-digit mobile" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="email">Email (Optional)</label>
+            <input id="email" name="email" type="email" placeholder="name@example.com" />
+          </div>
+
+          <div>
+            <label for="voterId">Voter ID / RFID Number (Optional)</label>
+            <input id="voterId" name="voterId" type="text" placeholder="Pre-issued ID or RFID" />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-section">
+        <div class="form-title">Authentication (Demo)</div>
+        <p class="muted">This section demonstrates OTP and facial-photo capture for your SafeCast/EVM project. In a production system, use secure back-end services and verified modules (GSM / OTP provider, camera module).</p>
+
+        <div class="grid-2">
+          <div>
+            <label for="mobileForOtp">Registered Mobile for OTP *</label>
+            <input id="mobileForOtp" name="mobileForOtp" type="tel" pattern="[0-9]{10}" required placeholder="10-digit mobile" />
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <button type="button" onclick="sendOtp()">Send OTP</button>
+              <input id="otpInput" placeholder="Enter OTP" style="padding:8px;border-radius:8px;border:1px solid #dbe6ef" />
+              <button type="button" onclick="verifyOtp()" class="secondary">Verify</button>
+            </div>
+            <div id="otpMessage" class="small" style="margin-top:8px"></div>
+          </div>
+
+          <div>
+            <label>Photo / Facial Capture</label>
+            <div class="row">
+              <div class="photo-preview" id="photoPreview">No image</div>
+              <div style="flex:1">
+                <input id="photoFile" type="file" accept="image/*" onchange="previewPhoto(event)" />
+                <div class="small" style="margin-top:8px">Attach a passport-size photo for facial recognition (demo).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-section">
+        <div class="form-title">Declaration</div>
+        <label>
+          <input id="declaration" name="declaration" type="checkbox" required /> I declare that the information provided is true.
+        </label>
+      </div>
+
+      <input type="hidden" id="applicationNumber" name="applicationNumber" />
+
+      <footer>
+        <div style="float:left;display:flex;gap:12px;align-items:center">
+          <div class="note">Fields marked * are required.</div>
+        </div>
+        <div class="actions">
+          <button type="button" class="secondary" onclick="resetForm()">Reset</button>
+          <button type="submit">Register</button>
+        </div>
+      </footer>
+    </form>
+  </div>
+
+  <script>
+    // Utility: calculate age from DOB
+    document.getElementById('dob').addEventListener('change', function(){
+      const dob = new Date(this.value);
+      if (!isNaN(dob)){
+        const now = new Date();
+        let age = now.getFullYear() - dob.getFullYear();
+        const m = now.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--;
+        document.getElementById('age').value = age;
+      }
+    });
+
+    // OTP demo (client-side only) - DO NOT use in production
+    let currentOtp = null;
+    function randomOtp(){ return Math.floor(100000 + Math.random()*900000).toString(); }
+    function sendOtp(){
+      const mobile = document.getElementById('mobileForOtp').value.trim();
+      const el = document.getElementById('otpMessage');
+      if(!/^[0-9]{10}$/.test(mobile)){ el.textContent='Enter valid 10-digit mobile first.'; el.className='error'; return }
+      currentOtp = randomOtp();
+      el.textContent = 'OTP sent (demo): ' + currentOtp + '. In real system, send OTP via SMS gateway.';
+      el.className='small';
+    }
+    function verifyOtp(){
+      const val = (document.getElementById('otpInput').value||'').trim();
+      const el = document.getElementById('otpMessage');
+      if(!currentOtp){ el.textContent='No OTP was sent. Click Send OTP first.'; el.className='error'; return }
+      if(val === currentOtp){ el.textContent='OTP verified.'; el.className='success'; }
+      else { el.textContent='Incorrect OTP.'; el.className='error'; }
+    }
+
+    // Photo preview
+    function previewPhoto(e){
+      const file = e.target.files[0];
+      const prev = document.getElementById('photoPreview');
+      if(!file){ prev.textContent='No image'; return }
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        prev.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = ev.target.result; img.style.maxWidth='100%'; img.style.maxHeight='100%'; img.style.borderRadius='6px';
+        prev.appendChild(img);
+      }
+      reader.readAsDataURL(file);
+    }
+
+    // Handle submit: generate application number and show summary
+    function handleSubmit(e){
+      e.preventDefault();
+      // Basic client-side validation
+      const form = document.getElementById('voterForm');
+      if(!form.checkValidity()){
+        form.reportValidity();
+        return false;
+      }
+      const appNo = 'APP-' + Date.now().toString().slice(-8);
+      document.getElementById('applicationNumber').value = appNo;
+
+      // Collect values for demo summary
+      const data = {
+        applicationNumber: appNo,
+        name: document.getElementById('fullName').value,
+        dob: document.getElementById('dob').value,
+        phone: document.getElementById('phone').value,
+        voterId: document.getElementById('voterId').value || '—'
+      };
+
+      // In an actual project, send 'data' to your back-end via fetch/AJAX to register.
+
+      alert('Registration submitted. Application No: ' + appNo + '\n\nName: ' + data.name + '\nDOB: ' + data.dob + '\nPhone: ' + data.phone);
+      form.reset();
+      document.getElementById('photoPreview').textContent='No image';
+      document.getElementById('age').value='';
+      document.getElementById('otpMessage').textContent='';
+      currentOtp = null;
+      return false;
+    }
+
+    function resetForm(){
+      if(confirm('Reset the form?')){
+        document.getElementById('voterForm').reset();
+        document.getElementById('photoPreview').textContent='No image';
+        document.getElementById('age').value='';
+        document.getElementById('otpMessage').textContent='';
+        currentOtp = null;
+      }
+    }
+  </script>
+</body>
+</html>
